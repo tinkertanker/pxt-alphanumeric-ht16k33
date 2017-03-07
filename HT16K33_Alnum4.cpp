@@ -217,7 +217,7 @@ namespace HT16K33_Alnum4 {
 		displaybuffer[position] = bitmask;
 	}
 	
-	void scroll(ManagedString s, int interval=100) {
+	void scroll(ManagedString s, int interval=250) {
 		uint16_t L = s.length();
 		if (interval < 0 || L <= 0) {
 			clearBuffer();
@@ -267,7 +267,7 @@ namespace HT16K33_Alnum4 {
     //% async
     //% blockId=alnum_print_message
 	//% icon="\uf1ec"
-    void showString(StringData *text, int interval = 100) {
+    void showString(StringData *text, int interval = 250) {
 		ManagedString s(text);
 		scroll(s, interval);
     }
@@ -282,7 +282,7 @@ namespace HT16K33_Alnum4 {
     //% blockId=alnum_print_number 
     //% block="show|number %number" blockGap=8
     //% async
-    void showNumber(int value, bool rightAlign = true, int interval = 100) { 
+    void showNumber(int value, bool rightAlign = true, int interval = 250) { 
 		if (interval < 0) {
 			clearBuffer();
 			writeDisplay();

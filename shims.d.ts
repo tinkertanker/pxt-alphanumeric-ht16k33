@@ -9,7 +9,7 @@ declare namespace HT16K33_Alnum4 {
     //% block="show|string %text" 
     //% async
     //% blockId=alnum_print_message
-    //% icon="\uf1ec" interval.defl=100 shim=HT16K33_Alnum4::showString
+    //% icon="\uf1ec" interval.defl=250 shim=HT16K33_Alnum4::showString
     function showString(text: string, interval?: number): void;
 
     /**
@@ -20,7 +20,7 @@ declare namespace HT16K33_Alnum4 {
     //% weight=96
     //% blockId=alnum_print_number 
     //% block="show|number %number" blockGap=8
-    //% async rightAlign.defl=1 interval.defl=100 shim=HT16K33_Alnum4::showNumber
+    //% async rightAlign.defl=1 interval.defl=250 shim=HT16K33_Alnum4::showNumber
     function showNumber(value: number, rightAlign?: boolean, interval?: number): void;
 
     /**

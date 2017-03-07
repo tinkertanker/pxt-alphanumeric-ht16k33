@@ -1,67 +1,39 @@
-# Sample PXT-microbit CPP Package Template
+# HT16K33 Alphanumeric Display PXT Package
 
-This is the template PXT-microbit CPP Package used by Tinkertanker.
+This is the PXT Package for HT16K33 Alphanumeric Display from ElecFreaks
 
-## Environment Setup
+## Hardware Setup
+1. Connect SCL, SDA to the TinkerTanker break out board's I2C pins.
+2. Connect VCC, GND to the break out board as well.
 
-1. Install [yotta](https://lancaster-university.github.io/microbit-docs/offline-toolchains/#yotta) if you haven't already
-2. Install node in a method appropriate for your platform. On MacOS I prefer these steps
-```
-# install nvm
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
+## PXT Blocks
+1. Initialize Alphanumeric Display
+This block will initialise the display to receive display inputs. It defaults to using micro:bit's I2C pins (I2C_SDA0 and I2C_SCL0).
 
-# install the latest node
-nvm install node
-```
-3. Create a folder for package development and install PXT
-```
-# create a folder of your choosing
-mkdir pxt-package-dev
-cd pxt-package-dev
+2. Show String
+This block will receive a string and display it on the Alphanumeric Display.
+If string has 4 or less characters, it will just display it without scrolling.
+If not, it will scroll with an interval of 250ms between shifts. (Interval can be changed)
 
-# install PXT command-line tools
-npm install -g pxt
+3. Show number
+This block will receive an integer and display it on the Alphanumeric Display.
+If the number has 4 or less characters (inclusive of negative sign), it will be displayed without scrolling, aligned to the right.
+If not, it will be converted to a string and scrolled as per 'Show String'.
 
-# install PXT microbit target
-pxt target microbit
 
-# create projects folder
-mkdir projects
-cd projects
+## Possible Extensions
+1. Control Blink Rate (defined in cpp, not exposed to PXT)
+2. Control Brightness between 0 to 15 (defined in cpp, not exposed to PXT)
 
-# clone this repository into your projects folder
-git clone ???
-```
+## Footnotes
+1. Quirks with numbering of LEDs on ElecFreaks's alphanumeric display.
+LED 11 and LED 13 are swapped as compared to Adafruit's alphanumeric display.
+The 'font' was designed for Adafruit's display and has been swapped inside this package via software.
 
-##  Building Package from Command Line
-1. From the package folder, run `pxt install` to pull in required PXT dependencies
-2. Run `pxt build` to compile
+2. Numbering of digits
+In this program, the digits are numbered from left to right, 0-indexed. Eg: 0-1-2-3
+However, they are numbered as 2-3-0-1 in specifications.
+They are renumbered in this package using xor: hardware_pos = software_pos^2 or software_pos = hardware_pos^2.
 
-## Including your test package in PXT
-1. Launch the PXT server from your `pxt-package-dev` folder using `pxt serve -yt`
-2. In your PXT project in the web browser, open project properties (More -> Project Properties)
-3. Click on Edit Settings As Text
-4. Add an entry under dependencies that points to your package folder (this is relative to your PXT project, which is likely in projects/untitled)
-```
-{
-    "name": "banana test",
-    "dependencies": {
-        ...
-        "banana": "file:../pxt-cpptemplate"
-    },
-    ...
-}
-```
-5. Click back to Block View to have the sample package installed, and the sample components should appear.
-
-## Modify the Template
-1. If all is working, you don't want your sample package to be linked back to our github repository anymore. In the package folder, delete the `.git` folder
-2. `pxt clean` first to remove generated files like all the `.d.ts` files
-3. Open `pxt.json` and edit the package info accordingly (name, version, description).
-4. You'll want to rename the implementation files `cpptemplate.cpp` and `cpptemplate.ts` to match your project, but remember to rename the corresponding entries in `pxt.json`
-5. Any header files you want to include should also go in the `pxt.json` file
-6. If 
-
-## TODO
-1. How to solve the `pxtsim` warning in the web editor when you try and run code that uses your package?
-2. How to draw the parts in the simulator like you see when you use the neopixel package?
+3. Datasheet
+Implemented according to datasheet: http://www.robotshop.com/media/files/pdf/EF4058-ht16K33v110-datasheet.pdf
