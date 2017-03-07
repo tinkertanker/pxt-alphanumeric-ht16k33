@@ -1,0 +1,15 @@
+{
+    "name": "HT16K33_Alnum4",
+    "version": "0.0.1",
+    "description": "Tinkercademy package for HT16K33 Alphanumeric Display",
+    "license": "MIT",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "README.md",
+        "shims.d.ts",
+        "HT16K33_Alnum4.cpp"
+    ],
+    "public": true
+}
