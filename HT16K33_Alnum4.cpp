@@ -145,12 +145,12 @@ namespace HT16K33_Alnum4 {
 	};
 	
 	
-	MicroBitI2C *i2c;
-	uint8_t i2c_addr;
+	MicroBitI2C i2c(I2C_SDA0, I2C_SCL0);
+	uint8_t i2c_addr(HT16K33_ADDRESS);
 	uint16_t displaybuffer[8];  //we only need 4
 	inline void command(uint8_t c) {
 		char cmd = c;
-		i2c->write(i2c_addr, &cmd, 1);
+		i2c.write(i2c_addr, &cmd, 1);
 	}
 	
 	
@@ -193,7 +193,7 @@ namespace HT16K33_Alnum4 {
 		buff[(p<<1)|1] = displaybuffer[i] & 0xFF;
 		buff[(p<<1)+2] = displaybuffer[i] >> 8;
 		}
-		i2c->write(i2c_addr, buff, sizeof(buff));
+		i2c.write(i2c_addr, buff, sizeof(buff));
 	}
 
 	void clearBuffer(void) {
@@ -254,8 +254,8 @@ namespace HT16K33_Alnum4 {
 				writeDisplay();
 				fiber_sleep(interval);
 			}
-			seq.clear();
 		}
+		seq.clear();
 	}
 	
 	/**
@@ -301,7 +301,6 @@ namespace HT16K33_Alnum4 {
 				uint8_t p = 3-s.length() + i + 1;
 				writeAscii(p, s.charAt(i));
 			}
-			writeDisplay();
 		}
 		else {
 			ManagedString s(value);
@@ -315,8 +314,8 @@ namespace HT16K33_Alnum4 {
 				uint8_t p = 4-s.length() + i;
 				writeAscii(p, s.charAt(i));
 			}
-			writeDisplay();
 		}
+		writeDisplay();
 		
     }
 	
@@ -328,10 +327,7 @@ namespace HT16K33_Alnum4 {
 	//% icon="\uf1ec"
 	void init(){
 		for (uint8_t i = 0; i < 8; ++i) displaybuffer[i] = 0;
-		i2c = new MicroBitI2C(I2C_SDA0, I2C_SCL0);
-		i2c_addr = HT16K33_ADDRESS;
 		begin();
 		writeDisplay();
 	}
-	
 }
