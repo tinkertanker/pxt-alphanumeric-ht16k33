@@ -1,6 +1,6 @@
 {
     "name": "HT16K33_Alnum4",
-    "version": "0.0.1",
+    "version": "1.0.2",
     "description": "Tinkercademy package for HT16K33 Alphanumeric Display",
     "license": "MIT",
     "dependencies": {
