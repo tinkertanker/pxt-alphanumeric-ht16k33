@@ -8,7 +8,7 @@
     },
     "files": [
         "README.md",
-        "shims.d.ts",
+        "alnum4.ts",
         "HT16K33_Alnum4.cpp"
     ],
     "public": true

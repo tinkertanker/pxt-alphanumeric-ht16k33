@@ -1,4 +1,3 @@
-// Auto-generated. Do not edit.
 declare namespace HT16K33_Alnum4 {
 
     /**
@@ -10,7 +9,9 @@ declare namespace HT16K33_Alnum4 {
     //% async
     //% blockId=alnum_print_message
     //% icon="\uf1ec" interval.defl=250 shim=HT16K33_Alnum4::showString
-    function showString(text: string, interval?: number): void;
+    export function showString(text: string, interval?: number): void {
+        console.log("alphanumeric display:" + text);
+    }
 
     /**
      * Scroll a number on the screen. If the number fits on the screen (i.e. less than 4 digit), do not scroll.
@@ -21,7 +22,9 @@ declare namespace HT16K33_Alnum4 {
     //% blockId=alnum_print_number 
     //% block="show|number %number" blockGap=8
     //% async rightAlign.defl=1 interval.defl=250 shim=HT16K33_Alnum4::showNumber
-    function showNumber(value: number, rightAlign?: boolean, interval?: number): void;
+    export function showNumber(value: number, rightAlign?: boolean, interval?: number): void {
+        console.log("alphanumeric display:" + value);
+    }
 
     /**
      * initialises I2C for alnum display
@@ -29,7 +32,5 @@ declare namespace HT16K33_Alnum4 {
     //% blockId=alnum_init
     //% block="Initialize Alphanumeric Display"
     //% icon="\uf1ec" shim=HT16K33_Alnum4::init
-    function init(): void;
+    export function init(): void {}
 }
-
-// Auto-generated. Do not edit. Really.

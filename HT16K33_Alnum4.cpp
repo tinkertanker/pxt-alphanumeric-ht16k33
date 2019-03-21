@@ -258,29 +258,13 @@ namespace HT16K33_Alnum4 {
 		seq.clear();
 	}
 	
-	/**
-	* Prints a text on the alnum display, will scroll with interval if more than 4 letters 
-	*/
-	//% help=basic/show-string 
-    //% weight=87 blockGap=8
-    //% block="show|string %text" 
-    //% async
-    //% blockId=alnum_print_message
-	//% icon="\uf1ec"
+	//%
     void showString(String text, int interval = 250) {
 		scroll(MSTR(text), interval);
     }
 	
 	
-	/**
-     * Scroll a number on the screen. If the number fits on the screen (i.e. less than 4 digit), do not scroll.
-     * Defaults to flush right
-     */
-    //% help=basic/show-number
-    //% weight=96
-    //% blockId=alnum_print_number 
-    //% block="show|number %number" blockGap=8
-    //% async
+	//%
     void showNumber(int value, bool rightAlign = true, int interval = 250) { 
 		if (interval < 0) {
 			clearBuffer();
@@ -318,12 +302,7 @@ namespace HT16K33_Alnum4 {
 		
     }
 	
-	/**
-	* initialises I2C for alnum display
-	*/
-	//% blockId=alnum_init
-	//% block="Initialize Alphanumeric Display"
-	//% icon="\uf1ec"
+	//%
 	void init(){
 		for (uint8_t i = 0; i < 8; ++i) displaybuffer[i] = 0;
 		begin();
