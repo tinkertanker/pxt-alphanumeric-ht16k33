@@ -267,9 +267,8 @@ namespace HT16K33_Alnum4 {
     //% async
     //% blockId=alnum_print_message
 	//% icon="\uf1ec"
-    void showString(StringData *text, int interval = 250) {
-		ManagedString s(text);
-		scroll(s, interval);
+    void showString(String text, int interval = 250) {
+		scroll(MSTR(text), interval);
     }
 	
 	
