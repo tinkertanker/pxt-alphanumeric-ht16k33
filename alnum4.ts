@@ -1,5 +1,5 @@
 //% color=#008080 weight=100 icon="\uf26c"
-declare namespace HT16K33_Alnum4 {
+namespace HT16K33_Alnum4 {
 
     /**
      * Prints a text on the alnum display, will scroll with interval if more than 4 letters 
@@ -10,6 +10,7 @@ declare namespace HT16K33_Alnum4 {
     //% blockId=alnum_print_message
     //% icon="\uf1ec" interval.defl=250 shim=HT16K33_Alnum4::showString
     export function showString(text: string, interval?: number): void {
+        console.log("alphanumeric display:" + text);
         return;
     }
 
@@ -22,6 +23,7 @@ declare namespace HT16K33_Alnum4 {
     //% block="show|number %number" blockGap=8
     //% async rightAlign.defl=1 interval.defl=250 shim=HT16K33_Alnum4::showNumber
     export function showNumber(value: number, rightAlign?: boolean, interval?: number): void {
+        console.log("alphanumeric display:" + value);
         return;
     }
 
