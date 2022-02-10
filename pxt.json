@@ -8,8 +8,7 @@
     },
     "files": [
         "README.md",
-        "alnum4.ts",
-        "HT16K33_Alnum4.cpp"
+        "alnum4.ts"
     ],
     "public": true
 }
