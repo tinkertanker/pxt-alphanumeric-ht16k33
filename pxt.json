@@ -10,5 +10,8 @@
         "README.md",
         "alnum4.ts"
     ],
+    "testFiles": [
+        "tests.ts"
+    ],
     "public": true
 }
