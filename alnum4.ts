@@ -186,12 +186,66 @@ namespace HT16K33_Alnum4 {
     }
 
     function clearBuffer() {
-		for (var i=0; i<4; i++) displaybuffer[i] = 0;
-	}
+        for (var i = 0; i < 4; i++) displaybuffer[i] = 0;
+    }
 
-    function writeRaw(position:number, bitmask:number) {
-		displaybuffer[position] = bitmask;
-	}
+    function writeRaw(position: number, bitmask: number) {
+        displaybuffer[position] = bitmask;
+    }
+
+    function writeAscii(position: number, a: string, dot = false) {
+        let bitmask = alphafonttable[parseInt(a)];
+
+        /* On HT16K33, position of bit 11 and 13 are swapped compared to AdaFruit */
+        if (!!(bitmask & (1 << 11)) != !!(bitmask & (1 << 13))) {
+            bitmask ^= (1 << 11) ^ (1 << 13);
+        }
+        //dot is the 15th bit
+        if (dot) bitmask |= (1 << 14);
+
+        displaybuffer[position] = bitmask;
+    }
+
+    function scroll(s: string, interval = 250) {
+        let L = s.length();
+        if (interval < 0 || L <= 0) {
+            clearBuffer();
+            writeDisplay();
+            return;
+        }
+        let list: seq = [];
+        for (var i = 0; i < L; i++) {
+            if (i && s.charAt(i) == '.') {
+                if ((seq[seq.length - 1] & (1 << 14)) == 0) {
+                    seq[seq.length - 1] |= (1 << 14);
+                    continue;
+                }
+            }
+            let bitmask = alphafonttable[parseInt(s.charAt(i))];
+            if (!!(bitmask & (1 << 11)) != !!(bitmask & (1 << 13)))
+                bitmask ^= (1 << 11) ^ (1 << 13);
+            seq.push(bitmask);
+        }
+        L = seq.length;
+        if (L <= 4) {
+            clearBuffer();
+            for (var i = 0; i < L; i++) {
+                let p = 4 - L + i;
+                writeRaw(p, seq[i]);
+            }
+            writeDisplay();
+        } else {
+            for (var i = -3; i <= L; i++) {
+                for (var p = 0; p < 4; p++) {
+                    if (i + p < 0 || i + p >= L) writeRaw(p, 0);
+                    else writeRaw(p, seq[i + p]);
+                }
+                writeDisplay();
+                basic.pause(interval);
+            }
+        }
+        seq = [];
+    }
 
     /**
      * Prints a text on the alnum display, will scroll with interval if more than 4 letters 
@@ -202,8 +256,8 @@ namespace HT16K33_Alnum4 {
     //% blockId=alnum_print_message
     //% icon="\uf1ec" interval.defl=250
     export function showString(text: string, interval?: number): void {
-        console.log("alphanumeric display:" + text);
-        return;
+        serial.writeString("showString\r\n");
+        scroll(text, interval);
     }
 
     /**
@@ -215,8 +269,39 @@ namespace HT16K33_Alnum4 {
     //% block="show|number %number" blockGap=8
     //% async rightAlign.defl=1 interval.defl=250
     export function showNumber(value: number, rightAlign?: boolean, interval?: number): void {
-        console.log("alphanumeric display:" + value);
-        return;
+        if (interval < 0) {
+            clearBuffer();
+            writeDisplay();
+            return;
+        }
+        if (value < 0) {
+			var s = toString(-value);
+            if (s.length > 3) {
+                scroll(s, interval);
+                return;
+            }
+            /* assume its 3 digits */
+            clearBuffer();
+            writeAscii(0, '-');
+            for (var i = 0; i < s.length; i++) {
+				let p = 3 - s.length + i + 1;
+                writeAscii(p, s.charAt(i));
+            }
+        }
+        else {
+			var s = toString(value);
+            if (s.length > 4) {
+                scroll(s, interval);
+                return;
+            }
+            /* assume its 4 digits */
+            clearBuffer();
+            for (var i = 0; i < s.length; ++i) {
+				let p = 4 - s.length + i;
+                writeAscii(p, s.charAt(i));
+            }
+        }
+        writeDisplay();
     }
 
     /**
@@ -226,6 +311,8 @@ namespace HT16K33_Alnum4 {
     //% block="Initialize Alphanumeric Display"
     //% icon="\uf1ec"
     export function init(): void {
-        return;
+        for (var i = 0; i < 8; i++) displaybuffer[i] = 0;
+		begin();
+		writeDisplay();
     }
 }
