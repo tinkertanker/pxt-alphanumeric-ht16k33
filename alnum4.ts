@@ -138,15 +138,15 @@ namespace HT16K33_Alnum4 {
         0b0011111111111111,
     ];
 
-    let displaybuffer = [null, null, null, null, null, null, null, null];
+    let displaybuffer = pins.createBuffer(8);
 
     function command(c: number) {
         let cmd = c;
-        pins.i2cWriteNumber(HT16K33_ADDRESS, cmd, NumberFormat.UInt16BE);
+        pins.i2cWriteNumber(HT16K33_ADDRESS, cmd, NumberFormat.Int8LE);
     }
 
     function setBrightness(b: number) {
-        /* Brightness can vary from 0 to 15 */
+        /* Brightness can lety from 0 to 15 */
         if (b > 15) b = 15;
         command(HT16K33_BRIGHTNESS | b);
     }
@@ -168,34 +168,36 @@ namespace HT16K33_Alnum4 {
     }
 
     function writeDisplay() {
-        let buff = [null, null, null, null, null, null, null, null, null];
-        buff[0] = 0x00;
-
+        let buff = pins.createBuffer(9);
+        buff.setNumber(NumberFormat.Int8LE, 0, 0x00);
         /* Changes the mapping of characters
         0 -> 2
         1 -> 3
         2 -> 0
         3 -> 1
         */
-        for (var i = 0, p; i < 4; i++) {
+        for (let i = 0, p; i < 4; i++) {
             p = i ^ 2;  //new mapped position
-            buff[(p << 1) | 1] = displaybuffer[i] & 0xFF;
-            buff[(p << 1) + 2] = displaybuffer[i] >> 8;
+            buff.setNumber(NumberFormat.Int8LE, (p << 1) | 1, displaybuffer.getNumber(NumberFormat.Int8LE, i) & 0xFF);
+            buff.setNumber(NumberFormat.Int8LE, (p << 1) + 2, displaybuffer.getNumber(NumberFormat.Int8LE, i) >> 8);
         }
-        pins.i2cWriteNumber(HT16K33_ADDRESS, buff, NumberFormat.UInt16BE);
+        serial.writeString("buff: ");
+        serial.writeBuffer(buff);
+        serial.writeLine("");
+        pins.i2cWriteBuffer(HT16K33_ADDRESS, buff, false);
     }
 
     function clearBuffer() {
-        for (var i = 0; i < 4; i++) displaybuffer[i] = 0;
+        displaybuffer.fill(0);
     }
 
     function writeRaw(position: number, bitmask: number) {
-        displaybuffer[position] = bitmask;
+        displaybuffer.setNumber(NumberFormat.Int8LE, position, bitmask);
     }
 
     function writeAscii(position: number, a: string, dot = false) {
         let bitmask = alphafonttable[parseInt(a)];
-
+        serial.writeValue("bitmask", bitmask);
         /* On HT16K33, position of bit 11 and 13 are swapped compared to AdaFruit */
         if (!!(bitmask & (1 << 11)) != !!(bitmask & (1 << 13))) {
             bitmask ^= (1 << 11) ^ (1 << 13);
@@ -203,18 +205,18 @@ namespace HT16K33_Alnum4 {
         //dot is the 15th bit
         if (dot) bitmask |= (1 << 14);
 
-        displaybuffer[position] = bitmask;
+        displaybuffer.setNumber(NumberFormat.Int8LE, position, bitmask);
     }
 
     function scroll(s: string, interval = 250) {
-        let L = s.length();
+        let L = s.length;
         if (interval < 0 || L <= 0) {
             clearBuffer();
             writeDisplay();
             return;
         }
-        let list: seq = [];
-        for (var i = 0; i < L; i++) {
+        let seq: Array<uint16> = [];
+        for (let i = 0; i < L; i++) {
             if (i && s.charAt(i) == '.') {
                 if ((seq[seq.length - 1] & (1 << 14)) == 0) {
                     seq[seq.length - 1] |= (1 << 14);
@@ -222,6 +224,7 @@ namespace HT16K33_Alnum4 {
                 }
             }
             let bitmask = alphafonttable[parseInt(s.charAt(i))];
+            //let bitmask = 0b0000100001001000; // z
             if (!!(bitmask & (1 << 11)) != !!(bitmask & (1 << 13)))
                 bitmask ^= (1 << 11) ^ (1 << 13);
             seq.push(bitmask);
@@ -229,14 +232,17 @@ namespace HT16K33_Alnum4 {
         L = seq.length;
         if (L <= 4) {
             clearBuffer();
-            for (var i = 0; i < L; i++) {
+            for (let i = 0; i < L; i++) {
                 let p = 4 - L + i;
                 writeRaw(p, seq[i]);
             }
+            serial.writeString("displaybuffer: ");
+            serial.writeBuffer(displaybuffer);
+            serial.writeLine("");
             writeDisplay();
         } else {
-            for (var i = -3; i <= L; i++) {
-                for (var p = 0; p < 4; p++) {
+            for (let i = -3; i <= L; i++) {
+                for (let p = 0; p < 4; p++) {
                     if (i + p < 0 || i + p >= L) writeRaw(p, 0);
                     else writeRaw(p, seq[i + p]);
                 }
@@ -256,7 +262,6 @@ namespace HT16K33_Alnum4 {
     //% blockId=alnum_print_message
     //% icon="\uf1ec" interval.defl=250
     export function showString(text: string, interval?: number): void {
-        serial.writeString("showString\r\n");
         scroll(text, interval);
     }
 
@@ -275,7 +280,8 @@ namespace HT16K33_Alnum4 {
             return;
         }
         if (value < 0) {
-			var s = toString(-value);
+            let nValue = -value;
+            let s = nValue.toString();
             if (s.length > 3) {
                 scroll(s, interval);
                 return;
@@ -283,21 +289,21 @@ namespace HT16K33_Alnum4 {
             /* assume its 3 digits */
             clearBuffer();
             writeAscii(0, '-');
-            for (var i = 0; i < s.length; i++) {
-				let p = 3 - s.length + i + 1;
+            for (let i = 0; i < s.length; i++) {
+                let p = 3 - s.length + i + 1;
                 writeAscii(p, s.charAt(i));
             }
         }
         else {
-			var s = toString(value);
+            let s = value.toString();
             if (s.length > 4) {
                 scroll(s, interval);
                 return;
             }
             /* assume its 4 digits */
             clearBuffer();
-            for (var i = 0; i < s.length; ++i) {
-				let p = 4 - s.length + i;
+            for (let i = 0; i < s.length; ++i) {
+                let p = 4 - s.length + i;
                 writeAscii(p, s.charAt(i));
             }
         }
@@ -311,8 +317,8 @@ namespace HT16K33_Alnum4 {
     //% block="Initialize Alphanumeric Display"
     //% icon="\uf1ec"
     export function init(): void {
-        for (var i = 0; i < 8; i++) displaybuffer[i] = 0;
-		begin();
-		writeDisplay();
+        displaybuffer.fill(0);
+        begin();
+        writeDisplay();
     }
 }
