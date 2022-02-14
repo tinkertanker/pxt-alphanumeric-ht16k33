@@ -8,7 +8,9 @@
     },
     "files": [
         "README.md",
-        "alnum4.ts"
+        "alnum4.ts",
+        "enums.d.ts",
+        "HT16K33_Alnum4.cpp"
     ],
     "testFiles": [
         "tests.ts"
