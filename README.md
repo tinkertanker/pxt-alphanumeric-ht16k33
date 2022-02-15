@@ -17,15 +17,16 @@ This block will receive a string and display it on the Alphanumeric Display.
 If string has 4 or less characters, it will just display it without scrolling.
 If not, it will scroll with an interval of 250ms between shifts. (Interval can be changed in JavaScript)
 
-3. Show number
+3. Show Number
 This block will receive an integer and display it on the Alphanumeric Display.
 If the number has 4 or less characters (inclusive of negative sign), it will be displayed without scrolling, aligned to the right.
 If not, it will be converted to a string and scrolled as per 'Show String'.
 
+4. Set Blink Rate (Advanced)
+This block will receive either an "off" state or a frequency (2 Hz, 1 Hz, 0.5Hz) that will determine the blink rate of the alphanumeric display.
 
-## Possible Extensions
-1. Control Blink Rate (defined in cpp, not exposed to PXT)
-2. Control Brightness between 0 to 15 (defined in cpp, not exposed to PXT)
+5. Set Brightness (Advanced)
+This block will receive an integer of value 0 to 15 (anything less than 0 will be mapped to 0, and anything more than 15 will be mapped to 15) that will determine the brightness of the alphanumeric display.
 
 ## Footnotes
 1. Quirks with numbering of LEDs on ElecFreaks's alphanumeric display.
