@@ -1,3 +1,14 @@
+enum blinkFrequency {
+    //% block="Off"
+    off = 0,
+    //% block="2 Hz"
+    twoHz = 1,
+    //% block="1 Hz"
+    oneHz = 2,
+    //% block="0.5 Hz"
+    halfHz = 3,
+}
+
 //% color=#008080 weight=100 icon="\uf26c"
 namespace HT16K33_Alnum4 {
     let HT16K33_ADDR = 0x70;
@@ -10,12 +21,14 @@ namespace HT16K33_Alnum4 {
     let HT16K33_CMD_BRIGHTNESS = 0xE0; // I2C register for BRIGHTNESS setting
 
     let displaybuffer: Array<NumberFormat.UInt16BE> = [0, 0, 0, 0, 0, 0, 0, 0];
+    let blinkNum = 0;
+    let displayBrightness = 15;
 
-    interface Map {
+    interface map {
         [key: string]: number;
     }
 
-    const charBits: Map = {
+    const charBits: map = {
         " ": 0b0000000000000000,
         "!": 0b0000000000000110,
         "\"": 0b0000001000100000,
@@ -113,13 +126,14 @@ namespace HT16K33_Alnum4 {
         "~": 0b0000010100100000,
     }
 
-    function setBrightness(b: NumberFormat.UInt8BE) {
+    function setBrightness(b: number) {
         if (b > 15) b = 15; // limit to max brightness
+        if (b < 0) b = 0; // limit to min brightness
         let buffer = HT16K33_CMD_BRIGHTNESS | b;
         pins.i2cWriteNumber(HT16K33_ADDR, buffer, NumberFormat.UInt8BE)
     }
 
-    function blinkRate(b: NumberFormat.UInt8BE) {
+    function blinkRate(b: number) {
         if (b > 3) b = 0; // turn off if not sure
         let buffer = HT16K33_BLINK_CMD | HT16K33_BLINK_DISPLAYON | (b << 1);
         pins.i2cWriteNumber(HT16K33_ADDR, buffer, NumberFormat.UInt8BE);
@@ -135,8 +149,8 @@ namespace HT16K33_Alnum4 {
         // when it is turned on.
         clear();
         writeDisplay();
-        blinkRate(HT16K33_BLINK_OFF);
-        setBrightness(15); // max brightness
+        blinkRate(blinkNum);
+        setBrightness(displayBrightness);
     }
 
     function writeDisplay() {
@@ -230,7 +244,7 @@ namespace HT16K33_Alnum4 {
      */
     //% weight=96
     //% blockId=alnum_print_number 
-    //% block="show|number %number" blockGap=8
+    //% block="show|number %value" blockGap=8
     //% async rightAlign.defl=1 interval.defl=250
     export function showNumber(value: number, rightAlign?: boolean, interval?: number): void {
         if (interval < 0) {
@@ -241,16 +255,10 @@ namespace HT16K33_Alnum4 {
         if (value < 0) {
             let nValue = -value;
             let s = nValue.toString();
+            s = "-" + s;
             if (s.length > 3) {
                 scroll(s, interval);
                 return;
-            }
-            /* assume its 3 digits */
-            clear();
-            writeAscii(0, '-');
-            for (let i = 0; i < s.length; i++) {
-                let p = 3 - s.length + i + 1;
-                writeAscii(p, s.charAt(i));
             }
         }
         else {
@@ -267,6 +275,36 @@ namespace HT16K33_Alnum4 {
             }
         }
         writeDisplay();
+    }
+
+    /**
+     * sets the blink rate of the alphanumeric display
+     */
+    //% weight=87 blockGap=8
+    //% block="set blink rate |%freq" 
+    //% async
+    //% advanced = true
+    //% blockId=alnum_blink
+    export function set_blink_rate(freq: blinkFrequency): void {
+        if (freq == blinkFrequency.off) blinkNum = 0;
+        if (freq == blinkFrequency.twoHz) blinkNum = 1;
+        if (freq == blinkFrequency.oneHz) blinkNum = 2;
+        if (freq == blinkFrequency.halfHz) blinkNum = 3;
+        blinkRate(blinkNum);
+    }
+
+    /**
+     * sets the brightness of the alphanumeric display
+     */
+    //% weight=87 blockGap=8
+    //% block="set brightness |%brightness" 
+    //% async
+    //% advanced = true
+    //% blockId=alnum_brightness
+    //% brightness.min=0 brightness.max= 15
+    export function set_brightness(brightness: number): void {
+        displayBrightness = brightness;
+        setBrightness(displayBrightness);
     }
 
     /**
