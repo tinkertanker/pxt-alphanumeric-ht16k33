@@ -5,7 +5,7 @@ for PXT/microbit
 This is the PXT Package for HT16K33 Alphanumeric Display from ElecFreaks
 
 ## Hardware Setup
-1. Connect SCL, SDA to the TinkerTanker break out board's I2C pins.
+1. Connect SCL, SDA to the TinkerTanker breakout board's I2C pins.
 2. Connect VCC, GND to the break out board as well.
 
 ## PXT Blocks
