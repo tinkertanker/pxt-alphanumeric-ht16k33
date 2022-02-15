@@ -5,7 +5,7 @@ for PXT/microbit
 This is the PXT Package for HT16K33 Alphanumeric Display from ElecFreaks
 
 ## Hardware Setup
-1. Connect SCL, SDA to the TinkerTanker break out board's I2C pins.
+1. Connect SCL, SDA to the Tinkercademy breakout board's I2C pins.
 2. Connect VCC, GND to the break out board as well.
 
 ## PXT Blocks
@@ -15,7 +15,7 @@ This block will initialise the display to receive display inputs. It defaults to
 2. Show String
 This block will receive a string and display it on the Alphanumeric Display.
 If string has 4 or less characters, it will just display it without scrolling.
-If not, it will scroll with an interval of 250ms between shifts. (Interval can be changed)
+If not, it will scroll with an interval of 250ms between shifts. (Interval can be changed in JavaScript)
 
 3. Show number
 This block will receive an integer and display it on the Alphanumeric Display.
