@@ -1,6 +1,6 @@
 {
     "name": "HT16K33_Alnum4",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "description": "Tinkercademy package for HT16K33 Alphanumeric Display",
     "license": "MIT",
     "dependencies": {
@@ -8,8 +8,18 @@
     },
     "files": [
         "README.md",
-        "alnum4.ts",
-        "HT16K33_Alnum4.cpp"
+        "alnum4.ts"
     ],
-    "public": true
+    "testFiles": [
+        "tests.ts"
+    ],
+    "public": true,
+    "targetVersions": {
+        "target": "4.0.17",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj"
 }
